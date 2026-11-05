@@ -1,0 +1,21 @@
+{
+  "name": "qa-portfolio-comet-coins",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QA portfolio: a fictional game, its independent math verifier, statistics, a Playwright suite and a generated QA report.",
+  "scripts": {
+    "rounds": "node tools/generate-rounds.js",
+    "verify": "node tools/verify.js data/rounds.json",
+    "verify:tampered": "node tools/verify.js data/rounds-tampered.json",
+    "stats": "node tools/stats.js data/rounds.json",
+    "report": "node tools/build-report.js",
+    "test": "playwright test",
+    "test:bug": "cross-env BUG=1 playwright test --project=desktop",
+    "all": "npm run rounds && npm run verify && npm run stats && npm test && npm run report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "cross-env": "^7.0.3"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comet Coins · demo game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* A small night-sky cabinet: grid in the middle, the controller bar below, history under that. */
+:root { --bg: #0d1226; --panel: #161d3a; --ink: #eef1ff; --muted: #9aa3cc; --line: #2a3463; --accent: #ffc94a; --win: #6fe0a0; --bad: #ff8f86; color-scheme: dark;
+  --display: "Oswald", "Arial Narrow", sans-serif; --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 30% 10%, #27306a 0, var(--bg) 55%) fixed; color: var(--ink); font: 16px/1.4 var(--body); display: grid; place-items: start center; padding: 24px 16px 48px; }
+main { width: min(520px, 100%); display: grid; gap: 16px; }
+header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+h1 { font: 600 30px/1 var(--display); margin: 0; letter-spacing: .03em; }
+h1 span { color: var(--accent); }
+.demo { font-size: 12px; color: var(--muted); }
+.cab { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cell { aspect-ratio: 1; border-radius: 12px; background: #0f1530; border: 1px solid var(--line); display: grid; place-items: center; font-size: clamp(30px, 9vw, 46px); transition: transform .15s, background .15s; }
+.cell.win { background: color-mix(in srgb, var(--win) 22%, #0f1530); border-color: var(--win); }
+.spinning .cell { animation: spin .5s linear infinite; }
+@keyframes spin { 0% { transform: translateY(-3px); opacity: .55; } 50% { transform: translateY(3px); opacity: 1; } 100% { transform: translateY(-3px); opacity: .55; } }
+.result { min-height: 24px; text-align: center; font-weight: 700; }
+.result.win { color: var(--win); } .result.bad { color: var(--bad); }
+.bar { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.bal { font-variant-numeric: tabular-nums; }
+.bal small, .amt small { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.bal b { font: 600 22px/1.1 var(--display); }
+.ctl { display: flex; align-items: center; gap: 8px; }
+.amt { text-align: center; min-width: 74px; font-variant-numeric: tabular-nums; } .amt b { font: 600 18px/1.1 var(--display); }
+button { font: 700 16px/1 var(--body); color: var(--ink); background: #222b56; border: 1px solid var(--line); border-radius: 12px; height: 44px; min-width: 44px; cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:disabled { opacity: .4; cursor: not-allowed; }
+#play { background: var(--accent); color: #241a00; border: 0; padding: 0 26px; font-size: 18px; letter-spacing: .06em; }
+.hist { display: grid; gap: 6px; }
+.hist h2 { font: 600 14px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.hist ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.hist li { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,.04); border-radius: 8px; }
+.hist li .w { color: var(--win); }
+footer { font-size: 13px; color: var(--muted); text-align: center; }
+footer a { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .spinning .cell { animation: none; opacity: .6; } }
+</style>
+</head>
+<body>
+<main>
+  <header><h1>COMET <span>COINS</span></h1><span class="demo">Fictional demo game · play credits only</span></header>
+  <section class="cab" aria-label="Game">
+    <div class="grid" id="grid" aria-label="Reels" aria-live="off"></div>
+    <div class="result" id="result" role="status" aria-live="polite">Press PLAY to start</div>
+    <div class="bar">
+      <div class="bal"><small>Balance</small><b id="balance" data-testid="balance">0.00</b></div>
+      <div class="ctl">
+        <button type="button" id="minus" aria-label="Decrease play amount">−</button>
+        <div class="amt"><small>Play</small><b id="amount" data-testid="amount">0.10</b></div>
+        <button type="button" id="plus" aria-label="Increase play amount">+</button>
+        <button type="button" id="play">PLAY</button>
+      </div>
+    </div>
+  </section>
+  <section class="hist" aria-label="Last rounds"><h2>Last rounds</h2><ol id="history" data-testid="history"></ol></section>
+  <footer>Rules: <a href="../docs/RULES.md">docs/RULES.md</a> · Report: <a href="../report/index.html">QA report</a> · <a href="../index.html">Portfolio</a></footer>
+</main>
+<script src="engine.js"></script>
+<script>
+// URL options for testing: ?seed=N (replayable rounds) · ?balance=N (start balance) · ?bug=display (planted UI bug for the demo)
+const q = new URLSearchParams(location.search);
+const game = CometEngine.createGame({ seed: +(q.get('seed') || Date.now() % 1e9), balance: +(q.get('balance') || 1000) });
+const BUG = q.get('bug') === 'display';
+const ICON = { STAR: '⭐', COMET: '☄️', PLANET: '🪐', MOON: '🌙', ROCK: '🪨', DUST: '✨', COIN: '🪙' };
+const $ = (id) => document.getElementById(id);
+const fmt = (x) => x.toFixed(2);
+let idx = 0, busy = false, shown = game.balance;
+window.__rounds = []; // what a network capture would hold: every payload the "server" returned
+
+const cells = [];
+for (let row = 0; row < 3; row++) for (let reel = 0; reel < 3; reel++) { const d = document.createElement('div'); d.className = 'cell'; d.textContent = '✨'; d.dataset.pos = reel + ',' + row; $('grid').appendChild(d); cells.push(d); }
+const cell = (reel, row) => cells[row * 3 + reel];
+const LINE_ROWS = { top: [0, 0, 0], middle: [1, 1, 1], bottom: [2, 2, 2], 'diag-down': [0, 1, 2], 'diag-up': [2, 1, 0] };
+
+function render() {
+  $('amount').textContent = fmt(CometEngine.PLAYS[idx]);
+  $('balance').textContent = fmt(shown);
+  $('minus').disabled = busy || idx === 0;
+  $('plus').disabled = busy || idx === CometEngine.PLAYS.length - 1;
+  $('play').disabled = busy;
+}
+$('minus').onclick = () => { if (idx > 0) idx--; render(); };
+$('plus').onclick = () => { if (idx < CometEngine.PLAYS.length - 1) idx++; render(); };
+$('play').onclick = async () => {
+  if (busy) return;
+  const stake = CometEngine.PLAYS[idx], r = game.play(stake);
+  if (r.error === 'INSUFFICIENT_FUNDS') { $('result').textContent = 'Not enough credits'; $('result').className = 'result bad'; return; }
+  window.__rounds.push(r);
+  busy = true; cells.forEach((c) => c.classList.remove('win')); $('grid').classList.add('spinning');
+  shown = r.balanceBefore - stake; render(); $('result').textContent = ''; $('result').className = 'result';
+  await new Promise((ok) => setTimeout(ok, 600));
+  $('grid').classList.remove('spinning');
+  r.grid.forEach((col, reel) => col.forEach((s, row) => { cell(reel, row).textContent = ICON[s]; cell(reel, row).setAttribute('aria-label', s); }));
+  r.lines.forEach((l) => LINE_ROWS[l.line].forEach((row, reel) => cell(reel, row).classList.add('win')));
+  if (r.scatter) r.grid.forEach((col, reel) => col.forEach((s, row) => { if (s === 'COIN') cell(reel, row).classList.add('win'); }));
+  $('result').textContent = r.totalWin > 0 ? `WIN ${fmt(r.totalWin)}${r.scatter ? ' · COIN BURST!' : ''}` : 'No win';
+  $('result').className = 'result' + (r.totalWin > 0 ? ' win' : '');
+  shown = BUG ? r.balanceBefore - stake : r.balanceAfter; // the planted bug forgets to add the win
+  const li = document.createElement('li'); li.dataset.round = r.roundId;
+  li.innerHTML = `<span>${r.roundId} · play ${fmt(stake)}</span><span class="${r.totalWin > 0 ? 'w' : ''}">${r.totalWin > 0 ? '+' + fmt(r.totalWin) : '0.00'}</span>`;
+  $('history').prepend(li); while ($('history').children.length > 10) $('history').lastChild.remove();
+  busy = false; render();
+};
+render();
+</script>
+</body>
+</html>

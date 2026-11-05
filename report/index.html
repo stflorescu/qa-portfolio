@@ -1,0 +1,114 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comet Coins QA report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root { --bg: #f2f5f2; --surface: #fff; --ink: #17241c; --muted: #56655b; --line: #d5ded7; --accent: #8a6410; --pass: #2a7a46; --pass-s: #def0e3; --fail: #b02a24; --fail-s: #f8dedb; --watch: #8a6200; --watch-s: #f6ebcc; --note: #4a55a0; --note-s: #e5e7f6;
+  --display: "Oswald", "Arial Narrow", sans-serif; --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace; }
+@media (prefers-color-scheme: dark) { :root { --bg: #101813; --surface: #18231c; --ink: #e8f0ea; --muted: #9fb0a4; --line: #2c3b31; --accent: #e8c25e; --pass: #78d293; --pass-s: #17301f; --fail: #ff8f86; --fail-s: #3c1a18; --watch: #e9c25a; --watch-s: #362a0e; --note: #a8b2ff; --note-s: #222744; color-scheme: dark; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); padding: 32px max(16px, env(safe-area-inset-left)) 72px; }
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2 { font-family: var(--display); font-weight: 600; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(36px, 6vw, 54px); line-height: 1; } h2 { font-size: 25px; }
+p { margin: 0; max-width: 72ch; }
+.eyebrow { font: 700 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: 14px; }
+header, section { display: grid; gap: 14px; }
+.plate { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--pass); border-radius: 6px; }
+.plate > div { padding: 20px 22px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.plate > div + div { border-left: 1px solid var(--line); }
+.call { font: 600 30px/1.1 var(--display); color: var(--pass); }
+.tally { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.tally b { display: block; font: 600 30px/1 var(--display); } .tally span { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.t-pass b { color: var(--pass); } .t-fail b { color: var(--fail); } .t-watch b { color: var(--watch); } .t-note b { color: var(--note); }
+.cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; box-shadow: inset 4px 0 0 var(--c); }
+.card .tag { font: 700 11px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+.card h3 { margin: 0; font-size: 18px; line-height: 1.3; }
+.card dl { margin: 0; display: grid; grid-template-columns: 64px 1fr; gap: 4px 10px; font-size: 14.5px; } .card dt { color: var(--muted); }
+.tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; }
+.tile b { font: 600 22px/1.1 var(--display); } .tile span { font-size: 13.5px; color: var(--muted); }
+.tw { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 640px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; padding: 2px 8px; border-radius: 6px; font: 700 11px/1.6 var(--body); letter-spacing: .06em; text-transform: uppercase; }
+.p-pass { color: var(--pass); background: var(--pass-s); } .p-fail { color: var(--fail); background: var(--fail-s); } .p-watch { color: var(--watch); background: var(--watch-s); } .p-note { color: var(--note); background: var(--note-s); }
+code, .mono { font-family: var(--mono); font-size: 13px; }
+.cid { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+a { color: var(--accent); }
+@media (max-width: 720px) { .plate { grid-template-columns: 1fr; } .plate > div + div { border-left: 0; border-top: 1px solid var(--line); } }
+</style></head><body><div class="wrap">
+<header>
+  <span class="eyebrow">Portfolio demo · fictional game · QA against docs/RULES.md</span>
+  <h1>Comet Coins</h1>
+  <div class="meta"><span>Generated 2026-11-04</span><span>5,000 captured rounds</span><span>Playwright: desktop + phone</span><span><a href="../game/index.html">Play the game</a></span><span><a href="../docs/RULES.md">Rules</a></span></div>
+</header>
+<section aria-labelledby="v"><div class="plate">
+  <div><span class="eyebrow" id="v">Verdict</span><div class="call">GO, with 1 item to watch</div>
+  <p>Every captured round re-derives exactly from the rules (5,000 rounds, 0 mismatches), the balance never drifts, and the observed RTP, hit rate and Coin Burst frequency match the exact model. One statistical flag on reel 1 did not reproduce in 5 fresh sessions, so it's recorded as a watch item, not a bug.</p></div>
+  <div class="tally"><div class="t-pass"><b>24</b><span>Pass</span></div><div class="t-fail"><b>0</b><span>Fail</span></div><div class="t-watch"><b>1</b><span>Watch</span></div><div class="t-note"><b>2</b><span>Notes</span></div></div>
+</div></section>
+
+<section aria-labelledby="f"><h2 id="f">Findings</h2><div class="cards">
+<article class="card" style="--c: var(--watch)"><span class="tag">Watch · S-4.1</span><h3>Reel 1 stop distribution flagged in one capture</h3>
+<dl><dt>Seen</dt><dd>chi² 62.86 on 29 df, p < 0.001 in the main capture (seed 2026)</dd><dt>Re-test</dt><dd>5 fresh sessions of 5,000 rounds: every reel p &gt; 0.01 (lowest 0.036)</dd><dt>Call</dt><dd>Not reproduced, so not a bug. Keep watching in future captures.</dd></dl></article>
+<article class="card" style="--c: var(--note)"><span class="tag">Note · engineering</span><h3>Use a stronger random number generator in production</h3>
+<dl><dt>Why</dt><dd>The demo engine uses a small seeded PRNG (mulberry32), fine for replayable tests, not for real money or prizes.</dd><dt>Suggest</dt><dd>A cryptographic RNG on the server, with the seed kept for audit.</dd></dl></article>
+<article class="card" style="--c: var(--pass)"><span class="tag">Self-test · M-3</span><h3>The verifier catches a 1-cent overpay</h3>
+<dl><dt>How</dt><dd>One winning round in a copy of the capture was raised by 0.01.</dd><dt>Result</dt><dd>Flagged exactly that round: total win differs: expected 0.8, got 0.81</dd></dl></article>
+</div></section>
+
+<section aria-labelledby="m"><h2 id="m">Maths and statistics</h2>
+<p>The verifier (<code>tools/verify.js</code>) was written from the rules document, not from the game code. The exact model goes through all 27,000 stop combinations.</p>
+<div class="tiles">
+  <div class="tile"><b>5,000 / 5,000</b><span>rounds re-derive exactly</span></div>
+  <div class="tile"><b>94.781%</b><span>exact RTP (observed 90.28%, z -1.70)</span></div>
+  <div class="tile"><b>38.72%</b><span>exact hit rate (observed 38.98%, z 0.37)</span></div>
+  <div class="tile"><b>1 in 125</b><span>Coin Burst (observed 41 in 5,000)</span></div>
+  <div class="tile"><b>25.6×</b><span>highest possible win (cap 500× never reached)</span></div>
+  <div class="tile"><b>1.87×</b><span>standard deviation per round</span></div>
+</div>
+<div class="tw"><table><thead><tr><th>Re-test session</th><th>Reel 1 p</th><th>Reel 2 p</th><th>Reel 3 p</th></tr></thead><tbody>
+<tr><td>Main capture (seed 2026)</td><td class="mono">&lt; 0.001</td><td class="mono">0.415</td><td class="mono">0.253</td></tr>
+<tr><td>Fresh session, seed 11</td><td class="mono">0.036</td><td class="mono">0.272</td><td class="mono">0.649</td></tr><tr><td>Fresh session, seed 23</td><td class="mono">0.283</td><td class="mono">0.086</td><td class="mono">0.272</td></tr><tr><td>Fresh session, seed 57</td><td class="mono">0.681</td><td class="mono">0.971</td><td class="mono">0.991</td></tr><tr><td>Fresh session, seed 101</td><td class="mono">0.889</td><td class="mono">0.641</td><td class="mono">0.472</td></tr><tr><td>Fresh session, seed 404</td><td class="mono">0.732</td><td class="mono">0.037</td><td class="mono">0.501</td></tr>
+</tbody></table></div></section>
+
+<section aria-labelledby="a"><h2 id="a">All checks</h2>
+<div class="tw"><table><thead><tr><th>Result</th><th>Check</th><th>Area</th><th>Actual</th></tr></thead><tbody>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §1 loads with the start balance and the lowest play amount</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §8 − and + step through every play amount and disable at the ends</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §8 controls are locked while a round plays</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §7 balance after every round = before − play + win (20 rounds, mixed amounts)</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §3–§7 every round the server returns re-verifies independently (100 rounds)</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §7 a play larger than the balance is refused with no round and no debit</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §8 history lists the last rounds, newest first, with the right wins</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §1 nothing on screen uses gambling wording (&quot;bet&quot;, &quot;wager&quot;, &quot;cash&quot;)</td><td>Behaviour · desktop</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §1 loads with the start balance and the lowest play amount</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §8 − and + step through every play amount and disable at the ends</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §8 controls are locked while a round plays</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §7 balance after every round = before − play + win (20 rounds, mixed amounts)</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §3–§7 every round the server returns re-verifies independently (100 rounds)</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §7 a play larger than the balance is refused with no round and no debit</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §8 history lists the last rounds, newest first, with the right wins</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">PW</span> §1 nothing on screen uses gambling wording (&quot;bet&quot;, &quot;wager&quot;, &quot;cash&quot;)</td><td>Behaviour · phone</td><td>Passed in Playwright</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">M-1</span> Every captured round re-derives from the rules (lines, wilds, Coin Burst, cap, rounding, balance)</td><td>Maths</td><td>5,000 rounds, 0 mismatches</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">M-2</span> Balance chains from round to round with no drift</td><td>Maths</td><td>Each round starts at the previous round's end balance</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">M-3</span> Verifier self-test: it catches a planted 1-cent overpay</td><td>Maths</td><td>1 mismatch found in the tampered capture (R01003)</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">S-1</span> Observed RTP is consistent with the exact model</td><td>Statistics</td><td>90.28% vs 94.781% (z -1.70)</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">S-2</span> Hit rate is consistent with the exact model</td><td>Statistics</td><td>38.98% vs 38.72% (z 0.37)</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">S-3</span> Coin Burst frequency is consistent with the exact model</td><td>Statistics</td><td>41 in 5000 vs 1 in 125 (z 0.16)</td></tr>
+<tr><td><span class="pill p-watch">Watch</span></td><td><span class="cid">S-4.1</span> Reel 1 stops are uniform</td><td>Statistics</td><td>chi² 62.86 on 29 df, p &lt; 0.001 · not reproduced in 5 re-tests</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">S-4.2</span> Reel 2 stops are uniform</td><td>Statistics</td><td>chi² 29.98 on 29 df, p = 0.415</td></tr>
+<tr><td><span class="pill p-pass">Pass</span></td><td><span class="cid">S-4.3</span> Reel 3 stops are uniform</td><td>Statistics</td><td>chi² 33.63 on 29 df, p = 0.253</td></tr>
+<tr><td><span class="pill p-note">Note</span></td><td><span class="cid">Q-1</span> Cap before or after rounding? (§9)</td><td>Open question</td><td>Observed: cap first, then round down. The highest possible win is 25.6× play, so the 500× cap is never reached</td></tr>
+<tr><td><span class="pill p-note">Note</span></td><td><span class="cid">Q-2</span> RTP (§9, not stated)</td><td>Open question</td><td>Exact RTP 94.781% from all 27,000 stop combinations</td></tr>
+</tbody></table></div></section>
+
+<section aria-labelledby="h"><h2 id="h">How it was tested</h2>
+<p>The game was played in Chromium (desktop and Pixel 7 emulation) with Playwright, which also captured each round's payload. Every payload was re-checked by the independent verifier. A separate capture of 5,000 rounds fed the statistics. Statistical flags were re-tested on fresh sessions before any call was made. Everything here can be reproduced with <code>npm run all</code>.</p>
+</section>
+</div></body></html>

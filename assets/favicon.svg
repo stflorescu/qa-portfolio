@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg { fill: #0B1024; } .tr { fill: none; stroke: #E9ECFA; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+    .md { stroke: #FFC94A; stroke-width: 3; stroke-dasharray: 5 4; } .hd { fill: #FFC94A; }
+  </style>
+  <rect class="bg" width="64" height="64" rx="12"/>
+  <line class="md" x1="8" x2="56" y1="30" y2="30"/>
+  <polyline class="tr" points="8,46 14,14 19,40 25,24 31,36 38,30 45,34 52,33"/>
+  <circle class="hd" cx="53" cy="33" r="5"/>
+</svg>
