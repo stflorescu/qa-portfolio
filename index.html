@@ -169,6 +169,12 @@ main > section { padding-block: calc(var(--gap) / 2); }
 .tiles details[open] summary::before { content: "−"; }
 .tiles details dl { margin: 12px 0 0; display: grid; gap: 4px; }
 .tiles details dd { margin: 0 0 8px; color: var(--text-2); font-size: 15px; }
+.tiles.t2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 900px) { .tiles.t2 { grid-template-columns: minmax(0, 1fr); } }
+.tiles .kind { color: var(--text-3); font-size: 15px; margin-top: -6px; }
+.alinks { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 15px; }
+.alinks a { font-weight: 500; }
+.sub-h { margin: 48px 0 0; }
 @media (max-width: 900px) { .feat > li { grid-template-columns: minmax(0, 1fr); gap: 16px; } .feat dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .feat dd { margin-bottom: 10px; } .tiles { grid-template-columns: minmax(0, 1fr); } }
 
 /* How I test */
@@ -285,7 +291,7 @@ footer.site p + p { margin-top: 4px; }
     <a class="brand" href="#top">Stefan Florescu</a>
     <span class="status"><span class="dot" aria-hidden="true"></span><span class="txt">Open to roles</span></span>
     <nav aria-label="Sections"><ul>
-      <li class="opt"><a href="#experience">Experience</a></li><li class="w"><a href="#work">Work</a></li><li class="opt"><a href="#how">How I test</a></li><li class="opt"><a href="#skills">Skills</a></li><li><a href="#contact">Contact</a></li>
+      <li class="opt"><a href="#experience">Experience</a></li><li class="w"><a href="#work">Work</a></li><li class="opt"><a href="#zoot">ZOOT games</a></li><li class="opt"><a href="#how">How I test</a></li><li class="opt"><a href="#skills">Skills</a></li><li><a href="#contact">Contact</a></li>
     </ul></nav>
     <button type="button" class="tbtn" id="tbtn" aria-label="Switch to dark theme">
       <svg class="moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
@@ -363,6 +369,34 @@ footer.site p + p { margin-top: 4px; }
         <details><summary class="label">Problem &amp; approach</summary><dl><dt class="label">Problem</dt><dd>A provider delivered a big batch, and each game needed a release decision.</dd><dt class="label">What I did</dt><dd>Drove a real Android phone and a desktop browser in parallel: one play per currency, banned wording, currency labels, both layouts and max exposure under the limit.</dd></dl></details></li>
       <li class="rv"><span class="label">Case 06</span><h3>Setting the QA process</h3><p class="res">Repeatable QA across games; judgement stays human.</p>
         <details><summary class="label">Problem &amp; approach</summary><dl><dt class="label">Problem</dt><dd>The QA process lived in people's heads.</dd><dt class="label">What I did</dt><dd>Defined how we test (spec to checks, re-test before reporting, clear GO / NO-GO rules) and wrote it down as 10 reusable AI agent playbooks with Claude Code.</dd></dl></details></li>
+    </ul>
+  </div>
+</section>
+
+<section id="zoot" aria-labelledby="zoot-h">
+  <div class="wrap">
+    <div class="shead rv"><span class="label">Archived and still playable</span><h2 id="zoot-h">ZOOT games</h2><p>ZOOT has closed, but its games live on in a public archive at <a href="https://zoot-portfolio.pages.dev/" target="_blank" rel="noopener">zoot-portfolio.pages.dev</a>. One of them I built; below it are a few I tested end to end, with manual testing and AI-driven testing.</p></div>
+    <ol class="feat">
+      <li class="rv"><div class="side"><span class="label">Built · Sep 2026</span><h3>Claw Machine</h3><span><span class="chip c-acc">BUILT</span></span><span class="tags">Forge (ZOOT's AI game builder) · prompts · reference images</span></div>
+        <dl><dt class="label">What it is</dt><dd>An arcade claw-machine game for the ZOOT platform, credited to me in the archive.</dd>
+        <dt class="label">What I did</dt><dd>Built it with Forge, ZOOT's AI game builder, by writing the prompts and feeding it reference images and reference games, then shaped it until it was ready to ship.</dd>
+        <dt class="sr">Result</dt><dd class="result"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>The team turned it into a reusable template: Autumn Claw and Midnight Claw (Oct 2026) are built on it.</dd>
+        <dt class="label">See it</dt><dd class="alinks"><a href="https://zoot-portfolio.pages.dev/games/claw-machine/" target="_blank" rel="noopener">Claw Machine ↗</a><a href="https://zoot-portfolio.pages.dev/games/autumn-claw/" target="_blank" rel="noopener">Autumn Claw ↗</a><a href="https://zoot-portfolio.pages.dev/games/midnight-claw/" target="_blank" rel="noopener">Midnight Claw ↗</a></dd></dl></li>
+    </ol>
+    <h3 class="label sub-h rv">Tested · a few that stood out</h3>
+    <ul class="tiles t2">
+      <li class="rv"><span class="label">Cluster cascade slot</span><h3>Hellfront</h3><span><span class="chip c-ok">GO</span></span><p class="res">Every round re-derived from the rules; hit rate 26.2% against 26.5% predicted.</p>
+        <details><summary class="label">What I checked</summary><dl><dt class="label">Approach</dt><dd>Turned the game's spec into ~90 checks, wrote an independent verifier for cluster wins, cascades and multipliers, and tested on a real Android phone.</dd><dt class="label">Outcome</dt><dd>Released as GO with two minor fixes. A first sample of 101 rounds looked off; 271 rounds showed the game was right.</dd></dl></details>
+        <a href="https://zoot-portfolio.pages.dev/games/hellfront/" target="_blank" rel="noopener">See it in the archive ↗</a></li>
+      <li class="rv"><span class="label">Coin slot</span><h3>Cauldron Grab</h3><span><span class="chip c-ok">GO</span></span><p class="res">1,405 real rounds re-checked, 0 maths mismatches.</p>
+        <details><summary class="label">What I checked</summary><dl><dt class="label">Approach</dt><dd>Verified line wins, Coin Grabs and every Bonus Round frame by frame against the rules, plus balances, languages and layouts.</dd><dt class="label">Outcome</dt><dd>GO after two wording fixes, one of them a gambling term in the Chinese translation.</dd></dl></details>
+        <a href="https://zoot-portfolio.pages.dev/games/cauldron-grab/" target="_blank" rel="noopener">See it in the archive ↗</a></li>
+      <li class="rv"><span class="label">Coin slot</span><h3>Coinfall Grab</h3><span><span class="chip c-acc">FIXED SAME DAY</span></span><p class="res">A phone-landscape bug found, reported and fixed the same day.</p>
+        <details><summary class="label">What I checked</summary><dl><dt class="label">Approach</dt><dd>Tested on a real phone held sideways and measured the game window against the layout's limits.</dd><dt class="label">Outcome</dt><dd>The play controls were cut off below about 270 px of height; the developers shipped a fixed build the same day.</dd></dl></details>
+        <a href="https://zoot-portfolio.pages.dev/games/coinfall-grab/" target="_blank" rel="noopener">See it in the archive ↗</a></li>
+      <li class="rv"><span class="label">Line slot</span><h3>The Ritual</h3><span><span class="chip c-err">NO-GO</span></span><p class="res">The NO-GO from Case 01: a paid feature broke the play limits.</p>
+        <details><summary class="label">What I checked</summary><dl><dt class="label">Approach</dt><dd>Played the edges of the play limits in both currencies and re-tested in a fresh session before reporting.</dd><dt class="label">Outcome</dt><dd>A clear NO-GO with evidence, so the launch decision was made knowingly.</dd></dl></details>
+        <a href="https://zoot-portfolio.pages.dev/games/the-ritual/" target="_blank" rel="noopener">See it in the archive ↗</a></li>
     </ul>
   </div>
 </section>
